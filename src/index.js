@@ -10,6 +10,8 @@ const buttonMore = document.querySelector('.load-more')
 let k = 0
 let total = 0
 
+let userInputValueOld
+
 async function fetchSearch(value, k) {
     
   const response = await fetch(`https://pixabay.com/api/?key=27870972-5e8850655f5136701fd41b94f&q=${value}&image_type=photo&orientation=horizontal&safesearch=true&page=${k}&per_page=40`)
@@ -64,17 +66,34 @@ function userInput(event) {
   
   event.preventDefault()
 
-  let userInputValue = input.value
+  let userInputValue = input.value.replace(' ', '+');
 
   if (userInputValue === '') {
     clearBox()
     k = 0
     return
-  } else {
-    userInputValue = userInputValue.replace(' ', '+');
-    k = k + 1
   }
+  //console.log(k)
+  if (k === 0) {
+  
+    userInputValueOld = userInputValue
+    //console.log(userInputValueOld)
+  } 
 
+  if (userInputValue === '') {
+    k = 0 
+    return
+  } else {
+    //userInputValue = userInputValue.replace(' ', '+');
+    
+    if (k != 0 || userInputValueOld != userInputValue)  {
+      k = 1
+    } else {
+      k = k + 1
+    }
+  
+  }
+  console.log(k)
   fetchSearch(userInputValue, k)
     .then(result => {
       if (result.length === 0) {
@@ -106,16 +125,10 @@ function userInputMore(event) {
   
   buttonMore.style.display = "none";
 
-  let userInputValue = input.value
+  let userInputValue = input.value.replace(' ', '+');
 
-  if (userInputValue === '') {
-    k = 0 
-    return
-  } else {
-    userInputValue = userInputValue.replace(' ', '+');
-    k = k + 1
-  }
-
+  k = k + 1
+  
   fetchSearch(userInputValue, k)
     .then(result => {
 
@@ -147,4 +160,8 @@ function hiddenCloseclick() {
     buttonMore.style.display = "none"
   }
   
+  if (total > 0) {
+    buttonMore.style.display = "block";
+  }
+
 };
